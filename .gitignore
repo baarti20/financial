@@ -1,0 +1,19 @@
+## Python
+venv/
+*.pyc
+__pycache__/
+
+## FastAPI app venv + caches
+ai-financial-advisor/venv/
+ai-financial-advisor/__pycache__/
+
+## Local generated artifacts (setup.py regenerates these)
+ai-financial-advisor/financial.db
+ai-financial-advisor/server.log
+ai-financial-advisor/ml/financial_data.csv
+ai-financial-advisor/ml/model.pkl
+
+## IDE / OS
+.idea/
+.vscode/
+.DS_Store
