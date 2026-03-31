@@ -132,12 +132,16 @@ def _predict(data: FinancialInput) -> float:
 # -- Endpoints ----------------------------------------------------------------
 
 @app.get("/", include_in_schema=False)
-async def root(request: Request):
+async def root():
+    return FileResponse(str(ROOT / "static" / "portfolio" / "index.html"))
+
+
+@app.get("/dashboard", include_in_schema=False)
+async def dashboard(request: Request):
     token = request.cookies.get("session")
     if not token or not validate_token(token):
         return RedirectResponse("/login")
     return FileResponse(str(ROOT / "static" / "index.html"))
-
 
 @app.get("/login", include_in_schema=False)
 async def login_page():

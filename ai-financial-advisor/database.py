@@ -115,6 +115,7 @@ def register_user(username: str, password: str, full_name: str = "") -> bool:
                 (full_name.strip(), username, _hash(password))
             )
             conn.commit()
+        _append_registration_to_csv(username=username, full_name=full_name)
         return True
     except sqlite3.IntegrityError:
         return False
@@ -164,6 +165,39 @@ def _append_to_csv(data: dict) -> None:
             "savings_goal": data["savings_goal"],
             "lifestyle_score": data["lifestyle_score"],
             "savings": data.get("predicted_savings", 0),
+        })
+
+
+def _append_registration_to_csv(username: str, full_name: str = "") -> None:
+    """Append a registration row to CSV without finance metrics."""
+    username = (username or "").strip()
+    if not username:
+        return
+
+    # Avoid duplicate registration entries for the same username.
+    if CSV_PATH.exists() and CSV_PATH.stat().st_size > 0:
+        with CSV_PATH.open("r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f, fieldnames=CSV_COLUMNS)
+            for row in reader:
+                if (row.get("username") or "").strip() == username:
+                    return
+
+    write_header = not CSV_PATH.exists() or CSV_PATH.stat().st_size == 0
+    with CSV_PATH.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+        if write_header:
+            writer.writeheader()
+        writer.writerow({
+            "name": (full_name or "").strip(),
+            "username": (username or "").strip(),
+            "password": "[protected]",
+            "income": "",
+            "fixed_expenses": "",
+            "variable_expenses": "",
+            "total_expenses": "",
+            "savings_goal": "",
+            "lifestyle_score": "",
+            "savings": "",
         })
 
 
